@@ -1,126 +1,128 @@
-# laravel-google-analytics-admin
-Google Analytics Admin for Laravel
+# Laravel Search Console
 
-Based on: https://developers.google.com/analytics/devguides/config/admin/v1
+Based on schulzefelix/laravel-search-console and modified to Laravel 8
 
-V0.1
+Using this package you can easily retrieve data from Google Search Console API.
 
-Requirements
-•  PHP >= 8.1
+Here are a few examples of the provided methods:
 
-•  Composer
-
-•  Laravel >= 8.0
-
-•  Oauth2 Google Token
-
-This package is using oAuth2 and it doens't authenticate with Google, we recommend to use Socialite to do this connection
-It is necessary this scope 
 ```php
-https://www.googleapis.com/auth/analytics.edit
+use SearchConsole;
+
+//list all available sites for that token
+SearchConsole::setAccessToken($token)->listSites();
+
+//get site details (permissionLevel) for specific site
+SearchConsole::setAccessToken($token)->getSite('http://blog.example.com/');
 ```
 
-Installation
-```bash
-composer require tda/laravel-google-analytics-admin
+
+## Install
+
+This package can be installed through Composer.
+
+``` bash
+$ composer require tda/laravel-search-console
 ```
 
 ## Usage
-Inside Laravel:
+
+Here are two basic example to retrieve all sites and an export for search analytics data.
+### List Sites
 
 ```php
-use Tda\LaravelGoogleAnalyticsAdmin\GoogleAnalyticsAdmin;
-$analytics = new GoogleAnalyticsAdmin($token);
+$sites = SearchConsole::setAccessToken($token)->listSites();
 ```
 
-## Features
+### Search Analytics
 
-### Account
-
-List accounts
 ```php
-$accounts = $analytics->listAccounts();
+use SearchConsole;
+use SchulzeFelix\SearchConsole\Period;
+
+    $data = SearchConsole::setAccessToken($token)->setQuotaUser('uniqueQuotaUserString')
+        ->searchAnalyticsQuery(
+            'https://www.example.com/',
+            Period::create(Carbon::now()->subDays(30), Carbon::now()->subDays(2)),
+            ['query', 'page', 'country', 'device', 'date'],
+            [['dimension' => 'query', 'operator' => 'notContains', 'expression' => 'cheesecake']],
+            1000,
+            'web',
+            'all',
+            'auto'
+        );
 ```
 
-Get Account
-Account name e.g.: 'accounts/100'
+## Provided methos
+### Retrieve One Site
 ```php
-$account = $analytics->getAccount($account);
+public function public function getSite(string $siteUrl): array
 ```
 
-Update Account
-Account name e.g.: 'accounts/100'
-Fields updatable: 'displayName', 'regionCode'
+### Retrieve All Sites
 ```php
-$params = ['displayName' => 'New Name', 'regionCode' => 'DE'];
-$account = $analytics->updateAccount($account, $params);
+public function public function listSites(): Collection
 ```
 
-Delete Account
-Account name e.g.: 'accounts/100'
+### Retrieve Search Analytics Data
 ```php
-$analytics->deleteAccount($account);
+public function searchAnalyticsQuery(string $siteUrl, Period $period, array $dimensions = [], array $filters = [], int $rows = 1000, string $searchType = 'web', string $dataState = 'final', string $aggregationType = 'auto'): Collection
 ```
 
-### Property
-
-List properties
-Account name e.g.: 'accounts/100'
+### Check Access Token
 ```php
-$properties = $analytics->listProperties($account);
+public function public function isAccessTokenExpired(): Bool
 ```
 
-Get Property
-Property name e.g.: 'properties/1000'
+## Provided fluent configuration
+
+### Set Access Token (Required)
+
 ```php
-$analytics->getProperty($property);
+$sites = SearchConsole::setAccessToken($token)->listSites();
 ```
 
-Create Property
-Fields: 
-{
-    'parent': string
-    'currencyCode': string
-    'displayName': string
-    'industryCategory': enum
-    'propertyType': enum
-    'timeZone': string
-    'serviceLevel': enum
-    'account': string
-}
+### Set Quota User
+To avoid to the API limits, you can provide a unique string for the authenticated account.
+
+More information: https://developers.google.com/webmaster-tools/search-console-api-original/v3/limits
 ```php
-$params = [
-    'parent' => 'accounts/100',
-    'currencyCode' => 'EUR',
-    'displayName' => "GA 4 property",
-    'industryCategory' => 'OTHER',
-    "propertyType" => "PROPERTY_TYPE_ORDINARY",
-    "timeZone" => "Europe/Berlin",
-    'account' => 'accounts/100',
-];
-$property = $analytics->createProperty($params);
-```
-To get all Propreties enum
-```php
-$enums = $analytics->getPropertiesResource();
+$sites = SearchConsole::setAccessToken($token)->setQuotaUser('uniqueQuotaUserString')->listSites();
 ```
 
-Update Property
-Property name e.g.: 'properties/1000'
-Fields updatable: 'displayName', 'industryCategory', 'timeZone', 'currencyCode'
+## Get Underlying Service
+You can get access to the underlying `Google_Service_Webmasters` object:
+
 ```php
-$params = [
-    'displayName' => 'Update GA 4 property', 
-    'industryCategory' => 'TECHNOLOGY', 
-    'timeZone' => 'America/New_York', 
-    'currencyCode' => 'USD'
-];
-$property = $analytics->updateProperty($property, $params);
+SearchConsole::getWebmastersService();
 ```
 
-Delete Property
-Account name e.g.: 'property/1000'
-```php
-$analytics->deleteProperty(property);
+## Change log
+
+Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+
+## Testing
+
+``` bash
+$ vendor/bin/phpunit
 ```
 
+## Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+
+## Security
+
+If you discover any security related issues, please email github@schulze.co instead of using the issue tracker.
+
+## Credits
+
+- [Davi Leichs]
+- [Felix Schulze]
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+[link-author]: https://github.com/davileichs
+[link-felix]: https://github.com/schulzefelix
