@@ -117,8 +117,8 @@ If you discover any security related issues, please email github@schulze.co inst
 
 ## Credits
 
-- [Davi Leichs]
-- [Felix Schulze]
+- [Davi Leichs][link-author]
+- [Felix Schulze][link-felix]
 
 ## License
 
