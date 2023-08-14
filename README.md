@@ -6,15 +6,6 @@ Using this package you can easily retrieve data from Google Search Console API.
 
 Here are a few examples of the provided methods:
 
-```php
-use SearchConsole;
-
-//list all available sites for that token
-SearchConsole::setAccessToken($token)->listSites();
-
-//get site details (permissionLevel) for specific site
-SearchConsole::setAccessToken($token)->getSite('http://blog.example.com/');
-```
 
 
 ## Install
@@ -34,6 +25,10 @@ Here are two basic example to retrieve all sites and an export for search analyt
 use Tda\GoogleSearchConsole\SearchConsole;
 $searchConsole = new SearchConsole();
 $sites = $searchConsole->setAccessToken($this->token)->listSites();
+
+//get site details (permissionLevel) for specific site
+$site = $searchConsole->setAccessToken($token)->getSite('http://blog.example.com/');
+
 ```
 
 ### Search Analytics
