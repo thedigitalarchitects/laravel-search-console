@@ -31,16 +31,19 @@ Here are two basic example to retrieve all sites and an export for search analyt
 ### List Sites
 
 ```php
-$sites = SearchConsole::setAccessToken($token)->listSites();
+use Tda\GoogleSearchConsole\SearchConsole;
+$searchConsole = new SearchConsole();
+$sites = $searchConsole->setAccessToken($this->token)->listSites();
 ```
 
 ### Search Analytics
 
 ```php
-use SearchConsole;
-use SchulzeFelix\SearchConsole\Period;
+use Tda\GoogleSearchConsole\SearchConsole;
+use Tda\SearchConsole\Period;
 
-    $data = SearchConsole::setAccessToken($token)->setQuotaUser('uniqueQuotaUserString')
+    $searchConsole = new SearchConsole();
+    $data = $searchConsole->setAccessToken($this->token)->setQuotaUser('uniqueQuotaUserString')
         ->searchAnalyticsQuery(
             'https://www.example.com/',
             Period::create(Carbon::now()->subDays(30), Carbon::now()->subDays(2)),
@@ -76,11 +79,6 @@ public function public function isAccessTokenExpired(): Bool
 
 ## Provided fluent configuration
 
-### Set Access Token (Required)
-
-```php
-$sites = SearchConsole::setAccessToken($token)->listSites();
-```
 
 ### Set Quota User
 To avoid to the API limits, you can provide a unique string for the authenticated account.
@@ -111,9 +109,6 @@ $ vendor/bin/phpunit
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
 
-## Security
-
-If you discover any security related issues, please email github@schulze.co instead of using the issue tracker.
 
 ## Credits
 
@@ -125,4 +120,4 @@ If you discover any security related issues, please email github@schulze.co inst
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
 [link-author]: https://github.com/davileichs
-[link-felix]: https://github.com/schulzefelix
+[link-felix]: https://github.com/schulzefelix/laravel-search-console
